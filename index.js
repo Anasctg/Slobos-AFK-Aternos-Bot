@@ -1212,7 +1212,7 @@ function createBot() {
       config.server.version && config.server.version.trim() !== ""
         ? config.server.version
         : false;
-    bot = mineflayer.createBot({
+        bot = mineflayer.createBot({
       username: config["bot-account"].username,
       password: config["bot-account"].password || undefined,
       auth: config["bot-account"].type,
@@ -1224,6 +1224,16 @@ function createBot() {
     });
 
     bot.loadPlugin(pathfinder);
+
+    // ============================================================
+    // PACKET INTERCEPTOR - Drops UUID array logs instantly
+    // ============================================================
+    bot.on('message', (jsonMsg) => {
+      const text = jsonMsg.toString();
+      if (text.includes("ee507101-f09c-3ebd-9a95-06c177e3b366") || text.includes("Slobot00") || text.includes("slobot00")) {
+        return; // Drops the data packet completely so it never broadcasts
+      }
+    });
 
     // FIX: connection timeout - end the old bot before reconnecting to avoid ghost bots
     clearBotTimeouts();
